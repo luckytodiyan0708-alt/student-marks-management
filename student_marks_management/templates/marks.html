@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+
+{% block title %}Marks Entry & Assessment{% endblock %}
+
+{% block content %}
+<div class="marks-container">
+    <!-- PAGE HEADER -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark mb-1">
+                <i class="fa-solid fa-pen-ruler text-primary me-2"></i>Marks Entry &amp; Evaluation
+            </h3>
+            <p class="text-muted small mb-0">Record exam marks, update scores, and ensure passing threshold validations.</p>
+        </div>
+        <div class="mt-3 mt-md-0">
+            <button type="button" class="btn btn-primary btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#addMarksModal">
+                <i class="fa-solid fa-plus me-1"></i> Enter New Marks
+            </button>
+        </div>
+    </div>
+
+    <!-- FILTER TOOLBAR -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
+        <div class="card-body p-3">
+            <form method="GET" action="{{ url_for('marks.index') }}" class="row g-2 align-items-center">
+                <!-- Exam Filter -->
+                <div class="col-md-3">
+                    <select name="exam_id" class="form-select form-select-sm">
+                        <option value="">All Examinations</option>
+                        {% for ex in examinations %}
+                        <option value="{{ ex.exam_id }}" {% if selected_exam|string == ex.exam_id|string %}selected{% endif %}>
+                            {{ ex.exam_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Class Filter -->
+                <div class="col-md-3">
+                    <select name="class_name" class="form-select form-select-sm">
+                        <option value="">All Degrees</option>
+                        {% for c in classes %}
+                        <option value="{{ c }}" {% if selected_class == c %}selected{% endif %}>{{ c }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Semester Filter -->
+                <div class="col-md-2">
+                    <select name="semester" class="form-select form-select-sm">
+                        <option value="">All Semesters</option>
+                        {% for s in range(1, 9) %}
+                        <option value="{{ s }}" {% if selected_sem|string == s|string %}selected{% endif %}>Semester {{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Student Filter -->
+                <div class="col-md-3">
+                    <select name="student_id" class="form-select form-select-sm">
+                        <option value="">All Students</option>
+                        {% for st in students %}
+                        <option value="{{ st.student_id }}" {% if selected_student|string == st.student_id|string %}selected{% endif %}>
+                            {{ st.roll_number }} - {{ st.student_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Submit / Clear -->
+                <div class="col-md-1 d-flex gap-1">
+                    <button type="submit" class="btn btn-primary btn-sm flex-fill" title="Apply Filter">
+                        <i class="fa-solid fa-filter"></i>
+                    </button>
+                    {% if selected_exam or selected_class or selected_sem or selected_student %}
+                    <a href="{{ url_for('marks.index') }}" class="btn btn-outline-secondary btn-sm" title="Reset">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MARKS RECORDS TABLE -->
+    <div class="card border-0 shadow-sm rounded-3 bg-white overflow-hidden">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light small text-uppercase">
+                        <tr>
+                            <th class="ps-4">Student</th>
+                            <th>Class &amp; Sem</th>
+                            <th>Subject</th>
+                            <th>Examination</th>
+                            <th class="text-center">Score</th>
+                            <th class="text-center">Threshold</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if marks %}
+                            {% for m in marks %}
+                            {% set is_passed = m.marks_obtained >= m.passing_marks %}
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-semibold text-dark">{{ m.student_name }}</div>
+                                    <span class="badge bg-light text-primary border font-monospace">{{ m.roll_number }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary-subtle text-secondary small">
+                                        {{ m.class_name }} &bull; Sem {{ m.semester }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="fw-medium text-dark">{{ m.subject_name }}</div>
+                                    <span class="text-muted small font-monospace">{{ m.subject_code }}</span>
+                                </td>
+                                <td>
+                                    <div class="small fw-medium text-dark">{{ m.exam_name }}</div>
+                                    <span class="text-muted small">{{ m.academic_year }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="fw-bold fs-6 {% if is_passed %}text-success{% else %}text-danger{% endif %}">
+                                        {{ m.marks_obtained }}
+                                    </span>
+                                    <span class="text-muted small">/ {{ m.max_marks }}</span>
+                                </td>
+                                <td class="text-center text-muted small">
+                                    Min: {{ m.passing_marks }}
+                                </td>
+                                <td class="text-center">
+                                    {% if is_passed %}
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                        <i class="fa-solid fa-check me-1"></i>PASS
+                                    </span>
+                                    {% else %}
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                                        <i class="fa-solid fa-xmark me-1"></i>FAIL
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editMarkModal{{ m.mark_id }}" title="Edit Marks">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#delMarkModal{{ m.mark_id }}" title="Delete Marks">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- EDIT MARKS MODAL -->
+                                    <div class="modal fade" id="editMarkModal{{ m.mark_id }}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered text-start">
+                                            <div class="modal-content border-0 shadow">
+                                                <form method="POST" action="{{ url_for('marks.edit', mark_id=m.mark_id) }}">
+                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                    <div class="modal-header bg-primary text-white">
+                                                        <h6 class="modal-title fw-bold"><i class="fa-solid fa-pen-to-square me-2"></i>Update Marks</h6>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body p-4">
+                                                        <p class="mb-1"><strong>Student:</strong> {{ m.student_name }} ({{ m.roll_number }})</p>
+                                                        <p class="mb-1"><strong>Subject:</strong> {{ m.subject_name }} ({{ m.subject_code }})</p>
+                                                        <p class="mb-3"><strong>Exam:</strong> {{ m.exam_name }}</p>
+                                                        
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-semibold">Obtained Marks (Max: {{ m.max_marks }}) <span class="text-danger">*</span></label>
+                                                            <input type="number" step="0.01" min="0" max="{{ m.max_marks }}" 
+                                                                   name="marks_obtained" class="form-control form-control-lg text-center fw-bold" 
+                                                                   value="{{ m.marks_obtained }}" required>
+                                                            <div class="form-text">Passing threshold: {{ m.passing_marks }} marks.</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer bg-light">
+                                                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-primary btn-sm">Update Marks</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- DELETE MARKS MODAL -->
+                                    <div class="modal fade" id="delMarkModal{{ m.mark_id }}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered text-start">
+                                            <div class="modal-content border-0 shadow">
+                                                <div class="modal-header bg-danger text-white">
+                                                    <h6 class="modal-title fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i>Delete Marks</h6>
+                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body p-4">
+                                                    <p>Are you sure you want to remove marks for <strong>{{ m.student_name }}</strong> in <strong>{{ m.subject_name }}</strong>?</p>
+                                                </div>
+                                                <div class="modal-footer bg-light">
+                                                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                                                    <form method="POST" action="{{ url_for('marks.delete', mark_id=m.mark_id) }}">
+                                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center py-5 text-muted">
+                                    <i class="fa-solid fa-pen-ruler fa-2x mb-3 text-secondary d-block"></i>
+                                    <h6>No marks entries found.</h6>
+                                    <p class="small text-muted mb-0">Use the "Enter New Marks" button to record examination marks.</p>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ADD MARKS MODAL -->
+<div class="modal fade" id="addMarksModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <form method="POST" action="{{ url_for('marks.add') }}" id="addMarksForm">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-header bg-primary text-white">
+                    <h6 class="modal-title fw-bold"><i class="fa-solid fa-plus me-2"></i>Record Examination Marks</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <!-- Examination -->
+                    <div class="mb-3">
+                        <label for="modalExamSelect" class="form-label fw-semibold">Select Examination <span class="text-danger">*</span></label>
+                        <select class="form-select" id="modalExamSelect" name="exam_id" required>
+                            <option value="">-- Choose Examination --</option>
+                            {% for ex in examinations %}
+                            <option value="{{ ex.exam_id }}">{{ ex.exam_name }} ({{ ex.academic_year }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Student -->
+                    <div class="mb-3">
+                        <label for="modalStudentSelect" class="form-label fw-semibold">Select Student <span class="text-danger">*</span></label>
+                        <select class="form-select" id="modalStudentSelect" name="student_id" required>
+                            <option value="">-- Choose Student --</option>
+                            {% for st in students %}
+                            <option value="{{ st.student_id }}">
+                                {{ st.roll_number }} - {{ st.student_name }} ({{ st.class_name }} Sem {{ st.semester }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Subject (Dynamically populated based on selected student) -->
+                    <div class="mb-3">
+                        <label for="modalSubjectSelect" class="form-label fw-semibold">Select Subject <span class="text-danger">*</span></label>
+                        <select class="form-select" id="modalSubjectSelect" name="subject_id" required>
+                            <option value="">-- First Select a Student --</option>
+                            {% for sub in subjects %}
+                            <option value="{{ sub.subject_id }}" data-max="{{ sub.max_marks }}" data-pass="{{ sub.passing_marks }}">
+                                [{{ sub.class_name }} Sem {{ sub.semester }}] {{ sub.subject_code }} - {{ sub.subject_name }} (Max: {{ sub.max_marks }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text" id="subjectMarksHint">Subject maximum marks and passing criteria will appear here.</div>
+                    </div>
+
+                    <!-- Marks Obtained -->
+                    <div class="mb-3">
+                        <label for="modalMarksObtained" class="form-label fw-semibold">Marks Obtained <span class="text-danger">*</span></label>
+                        <input type="number" step="0.01" min="0" class="form-control form-control-lg text-center fw-bold" 
+                               id="modalMarksObtained" name="marks_obtained" placeholder="0.00" required>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm fw-semibold">Save Marks</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const studentSelect = document.getElementById('modalStudentSelect');
+        const subjectSelect = document.getElementById('modalSubjectSelect');
+        const marksInput = document.getElementById('modalMarksObtained');
+        const hintEl = document.getElementById('subjectMarksHint');
+
+        // Dynamic subject filtering when student is selected
+        if (studentSelect && subjectSelect) {
+            studentSelect.addEventListener('change', function() {
+                const studentId = this.value;
+                if (!studentId) return;
+
+                fetch(`/marks/api/student-subjects/${studentId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.subjects.length > 0) {
+                            subjectSelect.innerHTML = '<option value="">-- Choose Subject --</option>';
+                            data.subjects.forEach(sub => {
+                                const opt = document.createElement('option');
+                                opt.value = sub.subject_id;
+                                opt.dataset.max = sub.max_marks;
+                                opt.dataset.pass = sub.passing_marks;
+                                opt.textContent = `${sub.subject_code} - ${sub.subject_name} (Max: ${sub.max_marks})`;
+                                subjectSelect.appendChild(opt);
+                            });
+                            hintEl.textContent = `Loaded ${data.subjects.length} registered subject(s) for this student's class & semester.`;
+                        }
+                    })
+                    .catch(err => console.error('Subject fetch error:', err));
+            });
+
+            // Update max attribute on marks input when subject changes
+            subjectSelect.addEventListener('change', function() {
+                const selectedOpt = this.options[this.selectedIndex];
+                if (selectedOpt && selectedOpt.dataset.max) {
+                    const maxMarks = parseFloat(selectedOpt.dataset.max);
+                    const passMarks = parseFloat(selectedOpt.dataset.pass);
+                    marksInput.max = maxMarks;
+                    hintEl.innerHTML = `<span class="text-primary fw-bold">Max Marks: ${maxMarks}</span> | <span class="text-success fw-bold">Passing Marks: ${passMarks}</span>`;
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
+

@@ -1,0 +1,178 @@
+/* =====================================================================
+   STUDENT MARKS MANAGEMENT SYSTEM - CUSTOM STYLESHEET
+   Author: Senior Full-Stack Developer
+   Target: BCA/MCA College Project Submission
+   ===================================================================== */
+
+:root {
+    --primary-color: #0d6efd;
+    --primary-dark: #0a58ca;
+    --sidebar-bg: #1e293b;
+    --sidebar-hover: #334155;
+    --sidebar-active: #2563eb;
+    --body-bg: #f8fafc;
+    --text-primary: #1e293b;
+    --text-muted: #64748b;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    --transition-speed: 0.25s;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--body-bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Background Gradients */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%) !important;
+}
+
+/* SIDEBAR LAYOUT */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1030;
+    background-color: var(--sidebar-bg);
+    transition: transform var(--transition-speed) ease-in-out;
+}
+
+.brand-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.brand-title {
+    letter-spacing: 0.5px;
+}
+
+.sidebar-nav .nav-link {
+    color: #94a3b8;
+    padding: 0.68rem 1rem;
+    font-size: 0.92rem;
+    font-weight: 500;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    transition: all var(--transition-speed) ease;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-nav .nav-link:hover {
+    color: #ffffff;
+    background-color: var(--sidebar-hover);
+}
+
+.sidebar-nav .nav-link.active {
+    color: #ffffff;
+    background-color: var(--sidebar-active);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+
+.sidebar-nav .nav-link i {
+    width: 22px;
+    font-size: 1.05rem;
+}
+
+/* User Profile in Sidebar Footer */
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+}
+
+.user-avatar-sm {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* MAIN WRAPPER (Offset by sidebar width on desktop) */
+.main-wrapper {
+    margin-left: 260px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: margin-left var(--transition-speed) ease-in-out;
+}
+
+.content-body {
+    flex: 1 0 auto;
+}
+
+/* STAT CARDS */
+.stat-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px -3px rgba(0, 0, 0, 0.08) !important;
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* TABLES STYLING */
+.table {
+    --bs-table-hover-bg: #f8fafc;
+}
+
+.table th {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: #475569;
+}
+
+/* BUTTONS */
+.btn {
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    border-radius: 6px;
+}
+
+.btn-sm {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.84rem;
+}
+
+/* RESPONSIVE TOGGLING FOR MOBILE & TABLETS */
+@media (max-width: 991.98px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    .main-wrapper {
+        margin-left: 0 !important;
+    }
+
+    /* Backdrop overlay when sidebar is open */
+    .sidebar-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1025;
+    }
+}
+

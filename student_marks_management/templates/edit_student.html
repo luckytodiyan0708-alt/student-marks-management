@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Student - {{ student.student_name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-8">
+        <!-- BREADCRUMB -->
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('students.index') }}">Students</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit Student</li>
+            </ol>
+        </nav>
+
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+            <div class="card-header bg-primary text-white py-3 px-4">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <i class="fa-solid fa-user-pen fa-lg me-3"></i>
+                        <div>
+                            <h5 class="fw-bold mb-0">Modify Student Record</h5>
+                            <p class="small text-white-50 mb-0">Update academic and profile credentials</p>
+                        </div>
+                    </div>
+                    <span class="badge bg-light text-primary font-monospace">{{ student.roll_number }}</span>
+                </div>
+            </div>
+
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('students.edit', student_id=student_id) }}" class="needs-validation" novalidate>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <h6 class="text-uppercase text-muted fw-bold small mb-3 border-bottom pb-2">
+                        <i class="fa-solid fa-id-card me-1 text-primary"></i> Academic Identification
+                    </h6>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="roll_number" class="form-label fw-semibold">Roll Number <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="roll_number" name="roll_number" 
+                                   value="{{ student.roll_number }}" required>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="class_name" class="form-label fw-semibold">Class / Degree <span class="text-danger">*</span></label>
+                            <select class="form-select" id="class_name" name="class_name" required>
+                                <option value="BCA" {% if student.class_name == 'BCA' %}selected{% endif %}>BCA</option>
+                                <option value="MCA" {% if student.class_name == 'MCA' %}selected{% endif %}>MCA</option>
+                                <option value="B.Tech" {% if student.class_name == 'B.Tech' %}selected{% endif %}>B.Tech</option>
+                                <option value="B.Sc IT" {% if student.class_name == 'B.Sc IT' %}selected{% endif %}>B.Sc IT</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="semester" class="form-label fw-semibold">Semester <span class="text-danger">*</span></label>
+                            <select class="form-select" id="semester" name="semester" required>
+                                {% for s in range(1, 9) %}
+                                <option value="{{ s }}" {% if student.semester|string == s|string %}selected{% endif %}>Semester {{ s }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <h6 class="text-uppercase text-muted fw-bold small mb-3 border-bottom pb-2">
+                        <i class="fa-solid fa-user me-1 text-primary"></i> Personal Demographics
+                    </h6>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="student_name" class="form-label fw-semibold">Student Full Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="student_name" name="student_name" 
+                                   value="{{ student.student_name }}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="father_name" class="form-label fw-semibold">Father's Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="father_name" name="father_name" 
+                                   value="{{ student.father_name }}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="dob" class="form-label fw-semibold">Date of Birth <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="dob" name="dob" 
+                                   value="{{ student.dob }}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold d-block">Gender <span class="text-danger">*</span></label>
+                            <div class="d-flex gap-4 pt-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender" id="genderMale" value="Male" 
+                                           {% if student.gender == 'Male' %}checked{% endif %} required>
+                                    <label class="form-check-label" for="genderMale">Male</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender" id="genderFemale" value="Female"
+                                           {% if student.gender == 'Female' %}checked{% endif %}>
+                                    <label class="form-check-label" for="genderFemale">Female</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender" id="genderOther" value="Other"
+                                           {% if student.gender == 'Other' %}checked{% endif %}>
+                                    <label class="form-check-label" for="genderOther">Other</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h6 class="text-uppercase text-muted fw-bold small mb-3 border-bottom pb-2">
+                        <i class="fa-solid fa-address-book me-1 text-primary"></i> Contact &amp; Residential Address
+                    </h6>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="email" class="form-label fw-semibold">Official Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   value="{{ student.email }}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="contact_no" class="form-label fw-semibold">Contact Phone Number <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="contact_no" name="contact_no" 
+                                   value="{{ student.contact_no }}" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="address" class="form-label fw-semibold">Permanent Residential Address <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="address" name="address" rows="3" required>{{ student.address }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 border-top pt-4">
+                        <a href="{{ url_for('students.index') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4 fw-semibold shadow-sm">
+                            <i class="fa-solid fa-check me-1"></i> Update Record
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

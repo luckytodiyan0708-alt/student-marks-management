@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Student Marks Management System{% endblock %}
+
+{% block public_content %}
+<div class="container d-flex align-items-center justify-content-center min-vh-100 py-5">
+    <div class="row justify-content-center w-100">
+        <div class="col-md-8 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-gradient-primary text-white text-center py-4 position-relative">
+                    <div class="brand-badge mb-2">
+                        <i class="fa-solid fa-graduation-cap fa-3x text-warning"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1">Student Marks Management</h4>
+                    <p class="small text-white-50 mb-0">College Academic Portal &bull; Secure Access</p>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <span class="badge bg-light text-primary border px-3 py-2 rounded-pill small">
+                            <i class="fa-solid fa-shield-halved me-1"></i> Admin &amp; Faculty Authentication
+                        </span>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('auth.login') }}" class="needs-validation" novalidate>
+                        <!-- CSRF Token -->
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                        <div class="mb-3">
+                            <label for="username" class="form-label fw-semibold">Username or Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-user text-muted"></i></span>
+                                <input type="text" class="form-control border-start-0 ps-0" id="username" name="username" 
+                                       placeholder="Enter username or email" value="{{ username or '' }}" required autofocus>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label fw-semibold">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-lock text-muted"></i></span>
+                                <input type="password" class="form-control border-start-0 ps-0" id="password" name="password" 
+                                       placeholder="Enter your password" required>
+                                <button class="btn btn-outline-secondary border border-start-0 bg-light" type="button" id="togglePassword">
+                                    <i class="fa-solid fa-eye text-muted" id="toggleIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-semibold shadow-sm">
+                                <i class="fa-solid fa-right-to-bracket me-2"></i> Log In to Portal
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Quick Demo Credentials Box for Evaluation -->
+                    <div class="mt-4 p-3 bg-light rounded-3 border">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fa-solid fa-key text-warning me-2"></i>
+                            <span class="small fw-bold text-dark">Default Demo Accounts (Click to Fill):</span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-outline-primary flex-fill fill-creds-btn" 
+                                    data-user="admin" data-pass="Admin@123">
+                                <strong>Admin</strong> (admin / Admin@123)
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-success flex-fill fill-creds-btn" 
+                                    data-user="teacher1" data-pass="Teacher@123">
+                                <strong>Teacher</strong> (teacher1 / Teacher@123)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-light text-center py-3 border-0 small text-muted">
+                    <span>Designed for BCA &amp; MCA Mini Project Submission &bull; 2026</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Quick demo credential autofill
+    document.querySelectorAll('.fill-creds-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById('username').value = this.dataset.user;
+            document.getElementById('password').value = this.dataset.pass;
+        });
+    });
+
+    // Password visibility toggle
+    const toggleBtn = document.getElementById('togglePassword');
+    const pwdInput = document.getElementById('password');
+    const toggleIcon = document.getElementById('toggleIcon');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+            const isPassword = pwdInput.type === 'password';
+            pwdInput.type = isPassword ? 'text' : 'password';
+            toggleIcon.classList.toggle('fa-eye', !isPassword);
+            toggleIcon.classList.toggle('fa-eye-slash', isPassword);
+        });
+    }
+</script>
+{% endblock %}
+

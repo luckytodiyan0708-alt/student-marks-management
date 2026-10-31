@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Enroll New Student{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-8">
+        <!-- BREADCRUMB -->
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('students.index') }}">Students</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Enroll Student</li>
+            </ol>
+        </nav>
+
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+            <div class="card-header bg-primary text-white py-3 px-4">
+                <div class="d-flex align-items-center">
+                    <i class="fa-solid fa-user-plus fa-lg me-3"></i>
+                    <div>
+                        <h5 class="fw-bold mb-0">Enroll New Student</h5>
+                        <p class="small text-white-50 mb-0">Enter full student academic and personal credentials</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('students.add') }}" class="needs-validation" novalidate>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <h6 class="text-uppercase text-muted fw-bold small mb-3 border-bottom pb-2">
+                        <i class="fa-solid fa-id-card me-1 text-primary"></i> Academic Identification
+                    </h6>
+
+                    <div class="row g-3 mb-4">
+                        <!-- Roll Number -->
+                        <div class="col-md-6">
+                            <label for="roll_number" class="form-label fw-semibold">Roll Number <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="roll_number" name="roll_number" 
+                                   placeholder="e.g. BCA2026-008" value="{{ form.get('roll_number', '') }}" required>
+                            <div class="form-text">Must be unique across the institution.</div>
+                        </div>
+
+                        <!-- Class / Program -->
+                        <div class="col-md-3">
+                            <label for="class_name" class="form-label fw-semibold">Class / Degree <span class="text-danger">*</span></label>
+                            <select class="form-select" id="class_name" name="class_name" required>
+                                <option value="">Select Degree</option>
+                                <option value="BCA" {% if form.get('class_name') == 'BCA' %}selected{% endif %}>BCA</option>
+                                <option value="MCA" {% if form.get('class_name') == 'MCA' %}selected{% endif %}>MCA</option>
+                                <option value="B.Tech" {% if form.get('class_name') == 'B.Tech' %}selected{% endif %}>B.Tech</option>
+                                <option value="B.Sc IT" {% if form.get('class_name') == 'B.Sc IT' %}selected{% endif %}>B.Sc IT</option>
+                            </select>
+                        </div>
+
+                        <!-- Semester -->
+                        <div class="col-md-3">
+                            <label for="semester" class="form-label fw-semibold">Semester <span class="text-danger">*</span></label>
+                            <select class="form-select" id="semester" name="semester" required>
+                                <option value="">Select Sem</option>
+                                {% for s in range(1, 9) %}
+                                <option value="{{ s }}" {% if form.get('semester')|string == s|string %}selected{% endif %}>Semester {{ s }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <h6 class="text-uppercase text-muted fw-bold small mb-3 border-bottom pb-2">
+                        <i class="fa-solid fa-user me-1 text-primary"></i> Personal Demographics
+                    </h6>
+
+                    <div class="row g-3 mb-4">
+                        <!-- Student Name -->
+                        <div class="col-md-6">
+                            <label for="student_name" class="form-label fw-semibold">Student Full Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="student_name" name="student_name" 
+                                   placeholder="e.g. Aditya Sharma" value="{{ form.get('student_name', '') }}" required>
+                        </div>
+
+                        <!-- Father's Name -->
+                        <div class="col-md-6">
+                            <label for="father_name" class="form-label fw-semibold">Father's Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="father_name" name="father_name" 
+                                   placeholder="e.g. Naresh Sharma" value="{{ form.get('father_name', '') }}" required>
+                        </div>
+
+                        <!-- Date of Birth -->
+                        <div class="col-md-6">
+                            <label for="dob" class="form-label fw-semibold">Date of Birth <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="dob" name="dob" 
+                                   value="{{ form.get('dob', '') }}" required>
+                        </div>
+
+                        <!-- Gender -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold d-block">Gender <span class="text-danger">*</span></label>
+                            <div class="d-flex gap-4 pt-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender" id="genderMale" value="Male" 
+                                           {% if form.get('gender', 'Male') == 'Male' %}checked{% endif %} required>
+                                    <label class="form-check-label" for="genderMale">Male</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender" id="genderFemale" value="Female"
+                                           {% if form.get('gender') == 'Female' %}checked{% endif %}>
+                                    <label class="form-check-label" for="genderFemale">Female</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender" id="genderOther" value="Other"
+                                           {% if form.get('gender') == 'Other' %}checked{% endif %}>
+                                    <label class="form-check-label" for="genderOther">Other</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h6 class="text-uppercase text-muted fw-bold small mb-3 border-bottom pb-2">
+                        <i class="fa-solid fa-address-book me-1 text-primary"></i> Contact &amp; Residential Address
+                    </h6>
+
+                    <div class="row g-3 mb-4">
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            <label for="email" class="form-label fw-semibold">Official Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   placeholder="aditya@student.edu" value="{{ form.get('email', '') }}" required>
+                        </div>
+
+                        <!-- Contact No -->
+                        <div class="col-md-6">
+                            <label for="contact_no" class="form-label fw-semibold">Contact Phone Number <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="contact_no" name="contact_no" 
+                                   placeholder="+91 9876543210" value="{{ form.get('contact_no', '') }}" required>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="col-12">
+                            <label for="address" class="form-label fw-semibold">Permanent Residential Address <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="address" name="address" rows="3" 
+                                      placeholder="House/Street, Landmark, City, State, PIN" required>{{ form.get('address', '') }}</textarea>
+                        </div>
+                    </div>
+
+                    <!-- SUBMIT BUTTONS -->
+                    <div class="d-flex justify-content-end gap-2 border-top pt-4">
+                        <a href="{{ url_for('students.index') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4 fw-semibold shadow-sm">
+                            <i class="fa-solid fa-floppy-disk me-1"></i> Save Student Record
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
